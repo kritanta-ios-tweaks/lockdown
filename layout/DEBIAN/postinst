@@ -1,0 +1,5 @@
+chown root:wheel /usr/libexec/ksecured
+chmod 755 /usr/libexec/ksecured
+chown root:wheel /Library/LaunchDaemons/me.krit.ksecured.plist
+chmod 644 /Library/LaunchDaemons/me.krit.ksecured.plist
+launchctl load /Library/LaunchDaemons/me.krit.ksecured.plist 2> /dev/null

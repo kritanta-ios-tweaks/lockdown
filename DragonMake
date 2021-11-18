@@ -1,0 +1,77 @@
+name: lockdown
+icmd: sbreload
+id: lockdown
+depends: mobilesubstrate
+version: 1.1.0
+architecture: iphoneos-arm
+description: lockdown
+author: _kritanta
+section: Tweaks
+
+all:
+  archs: 
+  - arm64
+
+ksecured:
+  type: cli 
+  codesign: ldid
+  dir: ksecured 
+  install_location: usr/libexec/
+  entflag: -S
+  entfile: ent.plist
+  prefix:
+    - Test.h
+  libs:
+    - mryipc
+  frameworks:
+    - IOKit
+  files:
+    - KLockdownKeybag.m 
+    - KLockdownServer.m
+    - "*.mm"
+  stage:
+    - mkdir -p .dragon/_/Library/LaunchDaemons/
+    - cp me.krit.ksecured.plist .dragon/_/Library/LaunchDaemons/me.krit.ksecured.plist
+
+libksecure:
+  type: library
+  dir: libksecure
+  install_location: /usr/lib/
+  libs:
+    - mryipc
+  files:
+    - KLockdownClient.m
+  stage:
+    - cp .dragon/_/usr/lib/libksecure.dylib ../libksecure.dylib
+
+lockdown:
+  type: tweak
+  filter:
+    executables:
+      - SpringBoard
+  libs:
+    - ksecure
+  frameworks:
+    - SpringBoardUIServices
+  files:
+    - SpringBoard.x
+
+managedconfhooks:
+  type: tweak 
+  filter:
+    bundles:
+      - "com.apple.managedconfiguration"
+  libs:
+    - ksecure
+  files:
+    - ManagedConfiguration.x
+
+prefhooks:
+  type: tweak
+  filter:
+    executables:
+      - Preferences
+  libs:
+    - ksecure
+  files:
+    - Preferences.x
